@@ -64,7 +64,7 @@ public class Board {
 	 * @return
 	 */
 	public boolean apply(Move move) {
-		if(move.isValid(this)) {
+		if(move.isValid(this)) {//singlePieceMove/Take.isValid() -> piece.isValidMove()
 			move.apply(this);//singlePieceMove.apply() -> board.move()
 			return true;
 		} else {
@@ -221,7 +221,7 @@ public class Board {
 		int diffCol = maxCol - minCol;
 		int diffRow = maxRow - minRow;
 
-		if(diffCol != 0 || diffRow == 0) {//move should be on the same column
+		if(diffCol != 0 || diffRow == 0) {//move should be on the same column.
 			return false;
 		}
 

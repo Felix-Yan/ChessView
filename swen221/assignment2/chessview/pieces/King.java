@@ -5,8 +5,8 @@ import swen221.assignment2.chessview.*;
 public class King extends PieceImpl implements Piece {
 	public King(boolean isWhite) {
 		super(isWhite);
-	}	
-	
+	}
+
 	public boolean isValidMove(Position oldPosition, Position newPosition,
 			Piece isTaken, Board board) {
 		int diffCol = Math.max(oldPosition.column(), newPosition.column())
@@ -20,7 +20,7 @@ public class King extends PieceImpl implements Piece {
 				&& (diffCol == 1 || diffRow == 1) && diffCol <= 1
 				&& diffRow <= 1;
 	}
-	
+
 	public String toString() {
 		if(isWhite) {
 			return "K";

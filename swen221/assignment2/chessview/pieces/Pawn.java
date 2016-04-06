@@ -32,7 +32,8 @@ public class Pawn extends PieceImpl implements Piece {
 		}
 		//pawn takes one opponent's piece normally
 		else if( (oldRow + dir) == newRow && ((oldCol+1) == newCol || (oldCol-1) == newCol) ){
-			return this.equals(p) && t == isTaken;
+			return this.equals(p)
+					&& (t == isTaken || (isTaken != null && isTaken.equals(t)));
 		}
 		return false;
 	}
