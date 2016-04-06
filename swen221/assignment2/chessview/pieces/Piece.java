@@ -1,6 +1,6 @@
 package swen221.assignment2.chessview.pieces;
 
-import java.util.Arrays;
+//import java.util.Arrays;
 
 import swen221.assignment2.chessview.*;
 
@@ -15,7 +15,7 @@ public interface Piece {
 	/**
 	 * Check whether or not a given move on a given board is valid. For takes,
 	 * the piece being taken must be supplied.
-	 * 
+	 *
 	 * @param oldPosition
 	 *            --- position of this piece before move.
 	 * @param newPosition
@@ -27,5 +27,5 @@ public interface Piece {
 	 * @return
 	 */
 	public boolean isValidMove(Position oldPosition,
-			Position newPosition, Piece isTaken, Board board);	
+			Position newPosition, Piece isTaken, Board board);
 }

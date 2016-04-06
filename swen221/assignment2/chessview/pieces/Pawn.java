@@ -6,7 +6,7 @@ public class Pawn extends PieceImpl implements Piece {
 	public Pawn(boolean isWhite) {
 		super(isWhite);
 	}
-	
+
 	public boolean isValidMove(Position oldPosition, Position newPosition,
 			Piece isTaken, Board board) {
 		int dir = isWhite ? 1 : -1;
@@ -20,16 +20,23 @@ public class Pawn extends PieceImpl implements Piece {
 
 		// this logic should be more complex than for other pieces, since there
 		// is a difference between a take and non-take move for pawns.
-		
+
+		//move one square ahead
 		if ((oldRow + dir) == newRow && oldCol == newCol) {
 			return this.equals(p) && t == null;
-		} else if ((oldRow + dir + dir) == newRow && oldCol == newCol) {
-			return ((dir == 1 && oldRow == 2) || (dir == -1 && oldRow == 7))					
+		}
+		//pawn can move two squares for the first move
+		else if ((oldRow + dir + dir) == newRow && oldCol == newCol) {
+			return ((dir == 1 && oldRow == 2) || (dir == -1 && oldRow == 7))
 					&& t == null && this.equals(p);
 		}
+		//pawn takes one opponent's piece normally
+		else if( (oldRow + dir) == newRow && ((oldCol+1) == newCol || (oldCol-1) == newCol) ){
+			return this.equals(p) && t == isTaken;
+		}
 		return false;
-	}	
-	
+	}
+
 	public String toString() {
 		if(isWhite) {
 			return "P";

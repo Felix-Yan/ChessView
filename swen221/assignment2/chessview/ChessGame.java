@@ -34,13 +34,13 @@ public class ChessGame {
 
 		// First, read in the commands
 		String line;
-		while((line = reader.readLine()) != null) {
+		while((line = reader.readLine()) != null) {//this will read the string line by line. Thus delimited by "\n".
 			if(line.equals("")) { continue; } // skip blank lines
 			int pos = line.indexOf(' ');
-			if(pos == -1) { pos = line.length(); }
+			if(pos == -1) { pos = line.length(); }//By Felix: this means no space. Only white move exists.
 			Move white = moveFromString(line.substring(0,pos),true);
 			Move black = null;
-			if(pos != line.length()) {
+			if(pos != line.length()) {//black move exists. pos is at the ' '.
 				black = moveFromString(line.substring(pos+1),false);
 			}
 			rounds.add(new Round(white,black));
@@ -59,7 +59,7 @@ public class ChessGame {
 	 */
 	public List<Board> boards() {
 		ArrayList<Board> boards = new ArrayList<Board>();
-		Board b = new Board();
+		Board b = new Board();//the board at the start of the game before anyone moves
 		boards.add(b);
 		boolean lastTime = false;
 		for(Round r : rounds) {
@@ -71,7 +71,7 @@ public class ChessGame {
 				b = new Board(b);
 				if(!b.apply(r.black())) { return boards; }
 				boards.add(b);
-			} else {
+			} else {//if black does not move any more, the last white move must be the last move
 				lastTime = true;
 			}
 		}
@@ -122,12 +122,12 @@ public class ChessGame {
 				piece = new Pawn(isWhite);
 		}
 
-		Position start = positionFromString(str.substring(index,index+2));
-		char moveType = str.charAt(index+2);
+		Position start = positionFromString(str.substring(index,index+2));//By Felix: eg. e2
+		char moveType = str.charAt(index+2);//By Felix: moveType is either 'x' or '-'
 		Piece target = null;
-		index = index + 3;
+		index = index + 3;//By Felix: now the index is at the start of the black move
 
-		if(moveType == 'x') {
+		if(moveType == 'x') {//By felix: piece taking move
 			lookahead = str.charAt(index);
 			switch(lookahead) {
 				case 'N':
@@ -158,7 +158,7 @@ public class ChessGame {
 		}
 
 		Position end = positionFromString(str.substring(index,index+2));
-		index = index + 2;
+		index = index + 2;//now index is at the end of this move string.
 
 		Move move;
 
@@ -168,6 +168,7 @@ public class ChessGame {
 			move = new SinglePieceMove(piece,start,end);
 		}
 
+		//en passant has ep as suffix
 		if((index+1) < str.length() && str.charAt(index) == 'e' && str.charAt(index+1) == 'p') {
 			move = new EnPassant((SinglePieceMove) move);
 			index+=2;
@@ -214,6 +215,11 @@ public class ChessGame {
 		return move;
 	}
 
+	/**
+	 * parsing a string of length 2 to be a position.
+	 * @param pos
+	 * @return
+	 */
 	private static Position positionFromString(String pos) {
 		if(pos.length() != 2) {
 			throw new IllegalArgumentException("invalid position: " + pos);

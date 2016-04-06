@@ -5,13 +5,13 @@ import swen221.assignment2.chessview.pieces.*;
 
 public class Board {
 	private Piece[][] pieces; // this is the underlying data structure for a board.
-	
+
 	/**
 	 * Construct an initial board.
 	 */
 	public Board() {
 		pieces = new Piece[9][9];
-		
+
 		for(int i=1;i<=8;++i) {
 			pieces[2][i] = new Pawn(true);
 			pieces[7][i] = new Pawn(false);
@@ -44,7 +44,7 @@ public class Board {
 
 	/**
 	 * Construct a board which is identical to another board.
-	 * 
+	 *
 	 * @param board
 	 */
 	public Board(Board board) {
@@ -52,57 +52,58 @@ public class Board {
 		for(int row=1;row<=8;++row) {
 			for(int col=1;col<=8;++col) {
 				this.pieces[row][col] = board.pieces[row][col];
-			}	
-		}		
+			}
+		}
 	}
 
 	/**
 	 * Apply a given move to this board, returning true is successful, otherwise
 	 * false.
-	 * 
+	 *
 	 * @param move
 	 * @return
 	 */
-	public boolean apply(Move move) {		
-		if(move.isValid(this)) {						
-			move.apply(this);			
-			return true;			
-		} else {			
-			return false;			
+	public boolean apply(Move move) {
+		if(move.isValid(this)) {
+			move.apply(this);//singlePieceMove.apply() -> board.move()
+			return true;
+		} else {
+			return false;
 		}
 	}
-	
+
 	/**
 	 * Move a piece from one position to another.
-	 * 
+	 *
 	 * @param oldPosition
 	 * @param newPosition
 	 */
-	public void move(Position oldPosition, Position newPosition) {		
-		Piece p = pieces[oldPosition.row()][oldPosition.column()];		
+	public void move(Position oldPosition, Position newPosition) {
+		Piece p = pieces[oldPosition.row()][oldPosition.column()];
+		//this will do the take action as it will overwrite the taken piece
 		pieces[newPosition.row()][newPosition.column()] = p;
 		pieces[oldPosition.row()][oldPosition.column()] = null;
 	}
-	
+
 	public void setPieceAt(Position pos, Piece piece) {
 		pieces[pos.row()][pos.column()] = piece;
 	}
-	
+
 	public Piece pieceAt(Position pos) {
 		return pieces[pos.row()][pos.column()];
 	}
-	
+
 	public String toString() {
 		String r = "";
 		for(int row=8;row!=0;row--) {
 			r += row + "|";
-			for(int col=1;col<=8;col++) {				
+			for(int col=1;col<=8;col++) {
 				Piece p = pieces[row][col];
-				if(p != null) {					
+				if(p != null) {
 					r += p + "|";
 				} else {
 					r += "_|";
-				}				
+				}
 			}
 			r += "\n";
 		}
@@ -111,7 +112,7 @@ public class Board {
 
 	/**
 	 * This method determines whether or not one side is in check.
-	 * 
+	 *
 	 * @param isWhite
 	 *            --- true means check whether white is in check; otherwise,
 	 *            check black.
@@ -148,52 +149,55 @@ public class Board {
 				// then we're definitely in check.
 				if (p != null && p.isWhite() != isWhite
 						&& p.isValidMove(pos, kingPos, king, this)) {
-					// p can take opposition king, so we're in check.						
+					// p can take opposition king, so we're in check.
 					return true;
 				}
 			}
 		}
-		
+
 		// couldn't find any piece in check.
 		return false;
 	}
-	
+
 	/**
 	 * The following method checks whether the given diaganol is completely
 	 * clear, except for a given set of pieces. Observe that this doesn't
 	 * guarantee a given diaganol move is valid, since this method does not
 	 * ensure anything about the relative positions of the given pieces.
-	 * 
+	 *
 	 * @param startPosition - start of diaganol
 	 * @param endPosition - end of diaganol
 	 * @param exceptions - the list of pieces allowed on the diaganol
 	 * @return
 	 */
+	//this checks no other pieces will block the diagonal move
 	public boolean clearDiaganolExcept(Position startPosition,
-			Position endPosition, Piece... exceptions) {			
+			Position endPosition, Piece... exceptions) {
 		int startCol = startPosition.column();
 		int endCol = endPosition.column();
 		int startRow = startPosition.row();
-		int endRow = endPosition.row();		
+		int endRow = endPosition.row();
 		int diffCol = Math.max(startCol,endCol) - Math.min(startCol,endCol);
-		int diffRow = Math.max(startRow,endRow) - Math.min(startRow,endRow);		
-		
-		if(diffCol != diffRow && diffCol == 0) {			
+		int diffRow = Math.max(startRow,endRow) - Math.min(startRow,endRow);
+
+		if(diffCol != diffRow
+				//&& diffCol == 0 //Is this a bug?
+				) {//TODO why diffCol == 0?
 			return false;
 		}
-		
-		
+
+
 		int row = startRow;
 		int col = startCol;
-		while(row != endRow && col != endCol) {			
-			Piece p = pieces[row][col];			
-			if(p != null && !contains(p,exceptions)) {				
+		while(row != endRow && col != endCol) {
+			Piece p = pieces[row][col];
+			if(p != null && !contains(p,exceptions)) {
 				return false;
 			}
 			col = col <= endCol ? col + 1 : col - 1;
 			row = row <= endRow ? row + 1 : row - 1;
-		}				
-		
+		}
+
 		return true;
 	}
 
@@ -202,72 +206,81 @@ public class Board {
 	 * clear, except for a given set of pieces. Observe that this doesn't
 	 * guarantee a given column move is valid, since this method does not
 	 * ensure anything about the relative positions of the given pieces.
-	 * 
+	 *
 	 * @param startPosition - start of column
 	 * @param endPosition - end of column
 	 * @param exceptions - the list of pieces allowed on the column
 	 * @return
 	 */
 	public boolean clearColumnExcept(Position startPosition,
-			Position endPosition, Piece... exceptions) {			
+			Position endPosition, Piece... exceptions) {
 		int minCol = Math.min(startPosition.column(), endPosition.column());
 		int maxCol = Math.max(startPosition.column(), endPosition.column());
 		int minRow = Math.min(startPosition.row(), endPosition.row());
-		int maxRow = Math.max(startPosition.row(), endPosition.row());		
+		int maxRow = Math.max(startPosition.row(), endPosition.row());
 		int diffCol = maxCol - minCol;
 		int diffRow = maxRow - minRow;
-		
-		if(diffCol != 0 || diffRow == 0) {
+
+		if(diffCol != 0 || diffRow == 0) {//move should be on the same column
 			return false;
 		}
-		
+
+		int row = minRow;
+		while(row <= maxRow) {
+			Piece p = pieces[row][minCol];
+			if(p != null && !contains(p,exceptions)) {
+				return false;
+			}
+			row++;
+		}
+
 		return true;
 	}
-	
+
 	/**
 	 * The following method checks whether the given row is completely
 	 * clear, except for a given set of pieces. Observe that this doesn't
 	 * guarantee a given row move is valid, since this method does not
 	 * ensure anything about the relative positions of the given pieces.
-	 * 
+	 *
 	 * @param startPosition - start of row
 	 * @param endPosition - end of row
 	 * @param exceptions - the list of pieces allowed on the row
 	 * @return
 	 */
 	public boolean clearRowExcept(Position startPosition,
-			Position endPosition, Piece... exceptions) {			
+			Position endPosition, Piece... exceptions) {
 		int minCol = Math.min(startPosition.column(), endPosition.column());
 		int maxCol = Math.max(startPosition.column(), endPosition.column());
 		int minRow = Math.min(startPosition.row(), endPosition.row());
-		int maxRow = Math.max(startPosition.row(), endPosition.row());		
+		int maxRow = Math.max(startPosition.row(), endPosition.row());
 		int diffCol = maxCol - minCol;
 		int diffRow = maxRow - minRow;
-		
-		if(diffRow != 0 || diffCol == 0) {
+
+		if(diffRow != 0 || diffCol == 0) {//move should be on the same row
 			return false;
 		}
-		
-		int col = minCol;		
-		while(col <= maxCol) {			
-			Piece p = pieces[minRow][col];			
-			if(p != null && !contains(p,exceptions)) {			
+
+		int col = minCol;
+		while(col <= maxCol) {
+			Piece p = pieces[minRow][col];
+			if(p != null && !contains(p,exceptions)) {
 				return false;
-			}					
-			col++; 
+			}
+			col++;
 		}
-		
+
 		return true;
 	}
-	
+
 	// Helper method for the clear?????Except methods above.
-	private static boolean contains(Piece p1, Piece... pieces) {		
-		for(Piece p2 : pieces) {						
-			if(p1 == p2) {									
+	private static boolean contains(Piece p1, Piece... pieces) {
+		for(Piece p2 : pieces) {
+			if(p1 == p2) {
 				return true;
 			}
-		}									
-		
+		}
+
 		return false;
-	}	
+	}
 }
