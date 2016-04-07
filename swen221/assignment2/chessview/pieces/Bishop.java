@@ -16,9 +16,9 @@ public class Bishop extends PieceImpl implements Piece {
 				&& (t == isTaken || (isTaken != null && isTaken.equals(t)))
 				//TODO why checking column and row?
 				&& (board.clearDiaganolExcept(oldPosition, newPosition, p, t)
-						|| board.clearColumnExcept(oldPosition, newPosition, p,
-								t) || board.clearRowExcept(oldPosition,
-						newPosition, p, t));
+						//|| board.clearColumnExcept(oldPosition, newPosition, p,t)
+						//  || board.clearRowExcept(oldPosition,newPosition, p, t)
+						);
 	}
 
 	public String toString() {

@@ -6,7 +6,7 @@ public class Knight extends PieceImpl implements Piece {
 	public Knight(boolean isWhite) {
 		super(isWhite);
 	}
-		
+
 	public boolean isValidMove(Position oldPosition, Position newPosition,
 			Piece isTaken, Board board) {
 		int diffCol = Math.max(oldPosition.column(), newPosition.column())
@@ -16,10 +16,10 @@ public class Knight extends PieceImpl implements Piece {
 		Piece p = board.pieceAt(oldPosition);
 		Piece t = board.pieceAt(newPosition);
 		return this.equals(p)
-				&& (t == isTaken || isTaken != null)
+				&& (t == isTaken || (isTaken != null && isTaken.equals(t)))
 				&& ((diffCol == 2 && diffRow == 1) || (diffCol == 1 && diffRow == 2));
 	}
-	
+
 	public String toString() {
 		if(isWhite) {
 			return "N";
