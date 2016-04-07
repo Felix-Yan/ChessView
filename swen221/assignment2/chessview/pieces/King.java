@@ -15,10 +15,21 @@ public class King extends PieceImpl implements Piece {
 				- Math.min(oldPosition.row(), newPosition.row());
 		Piece p = board.pieceAt(oldPosition);
 		Piece t = board.pieceAt(newPosition);
-		return this.equals(p)
+		if(this.equals(p)
 				&& (t == isTaken || (isTaken != null && isTaken.equals(t)))
 				&& (diffCol == 1 || diffRow == 1) && diffCol <= 1
-				&& diffRow <= 1;
+				&& diffRow <= 1){
+			//update the position of the corresponding King on the board
+			if(this.isWhite()){
+				board.setWhiteKingPos(newPosition);
+			}else{
+				board.setBlackKingPos(newPosition);
+			}
+			return true;
+		}
+		else{
+			return false;
+		}
 	}
 
 	public String toString() {

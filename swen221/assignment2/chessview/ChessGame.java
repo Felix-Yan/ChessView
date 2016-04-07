@@ -170,7 +170,7 @@ public class ChessGame {
 
 		//en passant has ep as suffix
 		if((index+1) < str.length() && str.charAt(index) == 'e' && str.charAt(index+1) == 'p') {
-			move = new EnPassant((SinglePieceMove) move);
+			move = new EnPassant((SinglePieceMove) move);//TODO
 			index+=2;
 		} else if((index+1) < str.length() && str.charAt(index)=='=') {
 			lookahead = str.charAt(index+1);
@@ -194,12 +194,12 @@ public class ChessGame {
 				default:
 					throw new IllegalArgumentException("invalid sheet");
 			}
-			move = new PawnPromotion((SinglePieceMove) move,promotion);
+			move = new PawnPromotion((SinglePieceMove) move,promotion);//TODO
 			index+=2;
 		}
 
 		if(index < str.length() && str.charAt(index) == '+') {
-			move = new Check((MultiPieceMove) move);
+			move = new Check((MultiPieceMove) move);//TODO
 			index++;
 		} else {
 			move = new NonCheck((MultiPieceMove) move);

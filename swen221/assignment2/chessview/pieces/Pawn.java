@@ -28,12 +28,13 @@ public class Pawn extends PieceImpl implements Piece {
 		//pawn can move two squares for the first move
 		else if ((oldRow + dir + dir) == newRow && oldCol == newCol) {
 			return ((dir == 1 && oldRow == 2) || (dir == -1 && oldRow == 7))
+					&& (board.clearColumnExcept(oldPosition, newPosition, p,t))//need to check column clear
 					&& t == null && this.equals(p);
 		}
 		//pawn takes one opponent's piece normally
 		else if( (oldRow + dir) == newRow && ((oldCol+1) == newCol || (oldCol-1) == newCol) ){
 			return this.equals(p)
-					&& (t == isTaken || (isTaken != null && isTaken.equals(t)));
+					&& (isTaken != null && isTaken.equals(t));//only move diagonally if t is not null
 		}
 		return false;
 	}

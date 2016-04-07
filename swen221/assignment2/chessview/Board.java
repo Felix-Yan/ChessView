@@ -5,6 +5,40 @@ import swen221.assignment2.chessview.pieces.*;
 
 public class Board {
 	private Piece[][] pieces; // this is the underlying data structure for a board.
+	private Position whiteKingPos;
+	private Position blackKingPos;
+
+	/**
+	 * @return the whiteKingPos
+	 */
+	public Position getWhiteKingPos() {
+		return whiteKingPos;
+	}
+
+
+	/**
+	 * @param whiteKingPos the whiteKingPos to set
+	 */
+	public void setWhiteKingPos(Position whiteKingPos) {
+		this.whiteKingPos = whiteKingPos;
+	}
+
+
+	/**
+	 * @param blackKingPos the blackKingPos to set
+	 */
+	public void setBlackKingPos(Position blackKingPos) {
+		this.blackKingPos = blackKingPos;
+	}
+
+
+	/**
+	 * @return the blackKingPos
+	 */
+	public Position getBlackKingPos() {
+		return blackKingPos;
+	}
+
 
 	/**
 	 * Construct an initial board.
@@ -40,7 +74,11 @@ public class Board {
 		pieces[1][5] = new King(true);
 		pieces[8][4] = new Queen(false);
 		pieces[8][5] = new King(false);
+
+		whiteKingPos = new Position(1,5);
+		blackKingPos = new Position(8,5);
 	}
+
 
 	/**
 	 * Construct a board which is identical to another board.
@@ -54,6 +92,9 @@ public class Board {
 				this.pieces[row][col] = board.pieces[row][col];
 			}
 		}
+		//Pass the King positions to the new identical board as well
+		this.blackKingPos = board.getBlackKingPos();
+		this.whiteKingPos = board.getWhiteKingPos();
 	}
 
 	/**
@@ -181,8 +222,8 @@ public class Board {
 		int diffRow = Math.max(startRow,endRow) - Math.min(startRow,endRow);
 
 		if(diffCol != diffRow
-				//&& diffCol == 0 //Is this a bug?
-				) {//TODO why diffCol == 0?
+				//&& diffCol == 0 //I think this is unnecessary
+				) {
 			return false;
 		}
 
