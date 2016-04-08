@@ -1,5 +1,8 @@
 package swen221.assignment2.chessview.pieces;
 
+import swen221.assignment2.chessview.Board;
+import swen221.assignment2.chessview.Position;
+
 //import java.util.Arrays;
 
 //import swen221.assignment2.chessview.*;

@@ -9,41 +9,41 @@ public class SinglePieceMove implements MultiPieceMove {
 	protected Piece piece;
 	protected Position oldPosition;
 	protected Position newPosition;
-	
+
 	public SinglePieceMove(Piece piece, Position oldPosition, Position newPosition) {
 		this.piece = piece;
 		this.oldPosition = oldPosition;
 		this.newPosition = newPosition;
 	}
-	
+
 	public Piece piece() {
 		return piece;
 	}
-	
+
 	public boolean isWhite() {
 		return piece.isWhite();
 	}
-	
+
 	public Position oldPosition() {
 		return oldPosition;
 	}
-	
+
 	public Position newPosition() {
 		return newPosition;
 	}
-	
+
 	public boolean isValid(Board board) {
 		return piece.isValidMove(oldPosition, newPosition, null, board);
 	}
-	
+
 	public void apply(Board b) {
 		b.move(oldPosition,newPosition);
 	}
-	
+
 	public String toString() {
-		return pieceChar(piece) + oldPosition + "-" + newPosition; 
+		return pieceChar(piece) + oldPosition + "-" + newPosition;
 	}
-	
+
 	protected static String pieceChar(Piece p) {
 		if(p instanceof Pawn) {
 			return "";
@@ -58,5 +58,13 @@ public class SinglePieceMove implements MultiPieceMove {
 		} else {
 			return "K";
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isChecking(Board board) {
+		return piece.canCheck(board, newPosition);
 	}
 }

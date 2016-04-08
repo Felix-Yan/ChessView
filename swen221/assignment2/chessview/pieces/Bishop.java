@@ -28,4 +28,16 @@ public class Bishop extends PieceImpl implements Piece {
 			return "b";
 		}
 	}
+
+	/**
+	 * This checks if the Bishop can make a valid check to the opponent's King.
+	 * @param board - the current board.
+	 * @param currentPos - the current position of this Bishop.
+	 * @return true if the Bishop can make a valid check to the opponent's King; false otherwise.
+	 */
+	@Override
+	public boolean canCheck(Board board, Position currentPos) {
+		Position kingPos = board.getKingPos(!this.isWhite);
+		return isValidMove(currentPos, kingPos, new King(!this.isWhite), board);
+	}
 }

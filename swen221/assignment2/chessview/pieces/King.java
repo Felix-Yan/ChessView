@@ -19,17 +19,25 @@ public class King extends PieceImpl implements Piece {
 				&& (t == isTaken || (isTaken != null && isTaken.equals(t)))
 				&& (diffCol == 1 || diffRow == 1) && diffCol <= 1
 				&& diffRow <= 1){
-			//update the position of the corresponding King on the board
-			if(this.isWhite()){
-				board.setWhiteKingPos(newPosition);
-			}else{
-				board.setBlackKingPos(newPosition);
-			}
+			//update the position of the corresponding King on the board if it makes a valid move
+			board.setKingPos(newPosition, isWhite);
 			return true;
 		}
 		else{
 			return false;
 		}
+	}
+
+	/**
+	 * This checks if the King can check another King in its current move.
+	 * A King should never check another King. As it will be checked instead.
+	 * @param board - the current board.
+	 * @param currentPos - the current Position of this King.
+	 * @return false always.
+	 */
+	@Override
+	public boolean canCheck(Board board, Position currentPos){
+		return false;
 	}
 
 	public String toString() {

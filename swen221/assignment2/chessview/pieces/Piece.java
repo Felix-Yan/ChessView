@@ -28,4 +28,12 @@ public interface Piece {
 	 */
 	public boolean isValidMove(Position oldPosition,
 			Position newPosition, Piece isTaken, Board board);
+
+	/**
+	 * This checks if the piece can check the opponent's King in its current move.
+	 * @param board  - the current board.
+	 * @param currentPos - the current position of the piece.
+	 * @return true if the piece can check the opponent's King in its current move; false otherwise.
+	 */
+	public boolean canCheck(Board board, Position currentPos);
 }

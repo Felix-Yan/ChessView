@@ -27,4 +27,16 @@ public class Knight extends PieceImpl implements Piece {
 			return "n";
 		}
 	}
+
+	/**
+	 * This checks if the Knight can make a valid check to the opponent's King.
+	 * @param board - the current board.
+	 * @param currentPos - the current position of this Knight.
+	 * @return true if the Knight can make a valid check to the opponent's King; false otherwise.
+	 */
+	@Override
+	public boolean canCheck(Board board, Position currentPos) {
+		Position kingPos = board.getKingPos(!this.isWhite);
+		return isValidMove(currentPos, kingPos, new King(!this.isWhite), board);
+	}
 }

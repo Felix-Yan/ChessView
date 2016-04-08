@@ -10,22 +10,32 @@ import swen221.assignment2.chessview.pieces.*;
  */
 public class PawnPromotion implements MultiPieceMove {
 	private Piece promotion;
-	
-	public PawnPromotion(SinglePieceMove move, Piece promotion) {						
+
+	public PawnPromotion(SinglePieceMove move, Piece promotion) {
 	}
-	
+
 	public boolean isWhite() {
 		return false;
 	}
-	
-	public boolean isValid(Board board) {				
+
+	public boolean isValid(Board board) {
 		return false;
 	}
-	
+
 	public void apply(Board board) {
 	}
-	
+
 	public String toString() {
 		return super.toString() + "=" + SinglePieceMove.pieceChar(promotion);
+	}
+
+	/**
+	 * A PawnPromotion is not a check.
+	 * @param board - the current board.
+	 * @return false always.
+	 */
+	@Override
+	public boolean isChecking(Board board) {
+		return false;
 	}
 }

@@ -26,7 +26,21 @@ public class Check implements Move {
 	}
 
 	public boolean isValid(Board board) {
-		return move.isValid(board);
+		if(move.isValid(board)){
+			//If the move is valid, update the board before calling isValidCheck.
+			this.apply(board);
+			return this.isValidCheck(board);
+		}
+		return false;
+	}
+
+	/**
+	 * Is this move checking the opponent's King?
+	 * @param board - the current board.
+	 * @return true if the move is a check; false otherwise.
+	 */
+	public boolean isValidCheck(Board board){
+		return move.isChecking(board);
 	}
 
 	public void apply(Board board) {

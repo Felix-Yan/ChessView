@@ -9,36 +9,31 @@ public class Board {
 	private Position blackKingPos;
 
 	/**
-	 * @return the whiteKingPos
+	 * This gets the position of the King based on the isWhite boolean.
+	 * @param isWhite - this tells the color of the King to be returned.
+	 * @return whiteKingPos if isWhite is true; blackKingPos otherwise.
 	 */
-	public Position getWhiteKingPos() {
-		return whiteKingPos;
+	public Position getKingPos(boolean isWhite){
+		if(isWhite){
+			return whiteKingPos;
+		}else{
+			return blackKingPos;
+		}
 	}
-
 
 	/**
-	 * @param whiteKingPos the whiteKingPos to set
+	 * This sets the position of the King based on the isWhite boolean. Set the white King if isWhite is true; set
+	 * the black King otherwise.
+	 * @param newPosition - the new position that the King should be set to.
+	 * @param isWhite - true if the King is white; false otherwise.
 	 */
-	public void setWhiteKingPos(Position whiteKingPos) {
-		this.whiteKingPos = whiteKingPos;
+	public void setKingPos(Position newPosition, boolean isWhite){
+		if(isWhite){
+			this.whiteKingPos = newPosition;
+		}else{
+			this.blackKingPos = newPosition;
+		}
 	}
-
-
-	/**
-	 * @param blackKingPos the blackKingPos to set
-	 */
-	public void setBlackKingPos(Position blackKingPos) {
-		this.blackKingPos = blackKingPos;
-	}
-
-
-	/**
-	 * @return the blackKingPos
-	 */
-	public Position getBlackKingPos() {
-		return blackKingPos;
-	}
-
 
 	/**
 	 * Construct an initial board.
@@ -93,8 +88,8 @@ public class Board {
 			}
 		}
 		//Pass the King positions to the new identical board as well
-		this.blackKingPos = board.getBlackKingPos();
-		this.whiteKingPos = board.getWhiteKingPos();
+		this.blackKingPos = board.getKingPos(false);
+		this.whiteKingPos = board.getKingPos(true);
 	}
 
 	/**
