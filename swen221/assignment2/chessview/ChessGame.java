@@ -199,7 +199,7 @@ public class ChessGame {
 		}
 
 		if(index < str.length() && str.charAt(index) == '+') {
-			move = new Check((MultiPieceMove) move);//TODO
+			move = new Check((MultiPieceMove) move);
 			index++;
 		} else {
 			move = new NonCheck((MultiPieceMove) move);

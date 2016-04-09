@@ -3,6 +3,7 @@ package swen221.assignment2.chessview.pieces;
 import swen221.assignment2.chessview.*;
 
 public class Rook extends PieceImpl implements Piece {
+
 	public Rook(boolean isWhite) {
 		super(isWhite);
 	}
@@ -12,11 +13,15 @@ public class Rook extends PieceImpl implements Piece {
 		Piece p = board.pieceAt(oldPosition);
 		Piece t = board.pieceAt(newPosition);
 
-		return this.equals(p)
+		if(this.equals(p)
 				&& (t == isTaken || (isTaken != null && isTaken.equals(t)))
 				&& (board.clearColumnExcept(oldPosition, newPosition, p,t)
 						|| board.clearRowExcept(oldPosition,newPosition, p, t)
-						);
+						) ){
+			board.setRookMoved(true);
+			return true;
+		}
+		return false;
 	}
 
 	public String toString() {
@@ -38,4 +43,5 @@ public class Rook extends PieceImpl implements Piece {
 		Position kingPos = board.getKingPos(!this.isWhite);
 		return isValidMove(currentPos, kingPos, new King(!this.isWhite), board);
 	}
+
 }

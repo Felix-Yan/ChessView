@@ -3,6 +3,7 @@ package swen221.assignment2.chessview.pieces;
 import swen221.assignment2.chessview.*;
 
 public class King extends PieceImpl implements Piece {
+
 	public King(boolean isWhite) {
 		super(isWhite);
 	}
@@ -21,6 +22,7 @@ public class King extends PieceImpl implements Piece {
 				&& diffRow <= 1){
 			//update the position of the corresponding King on the board if it makes a valid move
 			board.setKingPos(newPosition, isWhite);
+			board.setKingMoved(true);;
 			return true;
 		}
 		else{

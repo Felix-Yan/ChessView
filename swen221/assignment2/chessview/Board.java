@@ -7,33 +7,19 @@ public class Board {
 	private Piece[][] pieces; // this is the underlying data structure for a board.
 	private Position whiteKingPos;
 	private Position blackKingPos;
-
-	/**
-	 * This gets the position of the King based on the isWhite boolean.
-	 * @param isWhite - this tells the color of the King to be returned.
-	 * @return whiteKingPos if isWhite is true; blackKingPos otherwise.
+	private boolean whiteChecked;//Is the white king checked?
+	private boolean blackChecked;//Is the black king checked?
+	private boolean aboutToCheckWhite;
+	private boolean aboutToCheckBlack;
+	/*
+	 * the following two variables tell if the pieces hav moved at all in this game.
+	 * If moved already , moved should be true; false otherwise.
 	 */
-	public Position getKingPos(boolean isWhite){
-		if(isWhite){
-			return whiteKingPos;
-		}else{
-			return blackKingPos;
-		}
-	}
+	private boolean kingMoved;
+	private boolean rookMoved;
 
-	/**
-	 * This sets the position of the King based on the isWhite boolean. Set the white King if isWhite is true; set
-	 * the black King otherwise.
-	 * @param newPosition - the new position that the King should be set to.
-	 * @param isWhite - true if the King is white; false otherwise.
-	 */
-	public void setKingPos(Position newPosition, boolean isWhite){
-		if(isWhite){
-			this.whiteKingPos = newPosition;
-		}else{
-			this.blackKingPos = newPosition;
-		}
-	}
+
+
 
 	/**
 	 * Construct an initial board.
@@ -88,8 +74,11 @@ public class Board {
 			}
 		}
 		//Pass the King positions to the new identical board as well
+		//Also pass the checked booleans
 		this.blackKingPos = board.getKingPos(false);
 		this.whiteKingPos = board.getKingPos(true);
+		if(board.whiteChecked) this.setChecked(true);
+		if(board.blackChecked) this.setChecked(false);
 	}
 
 	/**
@@ -100,9 +89,41 @@ public class Board {
 	 * @return
 	 */
 	public boolean apply(Move move) {
-		if(move.isValid(this)) {//singlePieceMove/Take.isValid() -> piece.isValidMove()
-			move.apply(this);//singlePieceMove.apply() -> board.move()
-			return true;
+		/*
+		 * singlePieceMove/Take.isValid() -> piece.isValidMove()
+		 * Should check no king is checked as well.
+		 * singlePieceMove.apply() -> board.move()
+		 */
+		if(move.isValid(this)) {
+			if(!isChecked()){
+				move.apply(this);
+				if(aboutToCheckWhite){
+					this.whiteChecked = true;
+					aboutToCheckWhite = false;
+				}
+				else if(aboutToCheckBlack){
+					this.blackChecked = true;
+					aboutToCheckBlack = false;
+				}
+
+				//this is to make sure there are no check moves disguised as noncheck
+				if(isInCheck(true,this) || isInCheck(false, this)&& !isChecked() ){
+					return false;
+				}
+
+				return true;
+			}else{
+				//if a king is in check, the current move has to solve this problem. Otherwise invalid.
+				Board newBoard = new Board(this);
+				move.apply(newBoard);
+				if(!isInCheck(move.isWhite(),newBoard)){
+					move.apply(this);
+					removeChecked();
+					return true;
+				}else{
+					return false;
+				}
+			}
 		} else {
 			return false;
 		}
@@ -154,37 +175,22 @@ public class Board {
 	 *            check black.
 	 * @return
 	 */
-	public boolean isInCheck(boolean isWhite) {
-		King king = null; // opposition king
-		Position kingPos = null;
-
-		// First, find my king
-		outer: for (int row = 1; row <= 8; ++row) {
-			for (int col = 1; col <= 8; ++col) {
-				Position pos = new Position(row, col);
-				Piece p = pieceAt(pos);
-				if (p instanceof King && p.isWhite() == isWhite) {
-					// found him.
-					king = (King) p;
-					kingPos = pos;
-					// The following will break out of the entire loop, not
-					// just the innermost loop. This isn't exactly great
-					// style, but it is pretty convenient here.
-					break outer;
-				}
-			}
-		}
+	public boolean isInCheck(boolean isWhite, Board board) {
+		//First, find my king
+		//now it is more efficient and clear with my code
+		Position kingPos = board.getKingPos(isWhite);
+		King king = (King)(board.pieceAt(kingPos));
 
 		// Second, check opposition pieces to see whether they can take
 		// my king or not.  If one can, we're in check!
 		for (int row = 1; row <= 8; ++row) {
 			for (int col = 1; col <= 8; ++col) {
 				Position pos = new Position(row, col);
-				Piece p = pieceAt(pos);
+				Piece p = board.pieceAt(pos);
 				// If this is an opposition piece, and it can take my king,
 				// then we're definitely in check.
 				if (p != null && p.isWhite() != isWhite
-						&& p.isValidMove(pos, kingPos, king, this)) {
+						&& p.isValidMove(pos, kingPos, king, board)) {
 					// p can take opposition king, so we're in check.
 					return true;
 				}
@@ -319,4 +325,107 @@ public class Board {
 
 		return false;
 	}
+
+	/**
+	 * A getter for the field kingMoved.
+	 * @return the kingMoved
+	 */
+	public boolean isKingMoved() {
+		return kingMoved;
+	}
+
+	/**
+	 * A setter for the field kingMoved
+	 * @param kingMoved the kingMoved to set
+	 */
+	public void setKingMoved(boolean kingMoved) {
+		this.kingMoved = kingMoved;
+	}
+
+	/**
+	 * A getter for the field rookMoved
+	 * @return the rookMoved
+	 */
+	public boolean isRookMoved() {
+		return rookMoved;
+	}
+
+	/**
+	 * A setter for the field rookMoved
+	 * @param rookMoved the rookMoved to set
+	 */
+	public void setRookMoved(boolean rookMoved) {
+		this.rookMoved = rookMoved;
+	}
+
+	/**
+	 * This sets if the king is going to be checked after this move.
+	 * @param isWhite - true if the white king is going to be checked; false if the black king is going to be checked.
+	 */
+	public void aboutToCheck(boolean isWhite){
+		if(isWhite){
+			this.aboutToCheckWhite = true;
+		}else{
+			this.aboutToCheckBlack = true;
+		}
+	}
+
+	/**
+	 * This sets if the king is checked at the moment.
+	 * @param isWhite - true if the white king is going to be checked; false if the black king is going to be checked.
+	 */
+	public void setChecked(boolean isWhite){
+		if(isWhite){
+			this.whiteChecked = true;
+		}else{
+			this.blackChecked = true;
+		}
+	}
+
+	/**
+	 * This sets both whiteChecked and blackChecked to be false.
+	 */
+	public void removeChecked(){
+		this.whiteChecked = false;
+		this.blackChecked = false;
+	}
+
+	/**
+	 * This checks if a king is checked at the moment.
+	 * @return true if either the white king or the black king is checked; false otherwise.
+	 */
+	public boolean isChecked(){
+		if(whiteChecked || blackChecked){
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * This gets the position of the King based on the isWhite boolean.
+	 * @param isWhite - this tells the color of the King to be returned.
+	 * @return whiteKingPos if isWhite is true; blackKingPos otherwise.
+	 */
+	public Position getKingPos(boolean isWhite){
+		if(isWhite){
+			return whiteKingPos;
+		}else{
+			return blackKingPos;
+		}
+	}
+
+	/**
+	 * This sets the position of the King based on the isWhite boolean. Set the white King if isWhite is true; set
+	 * the black King otherwise.
+	 * @param newPosition - the new position that the King should be set to.
+	 * @param isWhite - true if the King is white; false otherwise.
+	 */
+	public void setKingPos(Position newPosition, boolean isWhite){
+		if(isWhite){
+			this.whiteKingPos = newPosition;
+		}else{
+			this.blackKingPos = newPosition;
+		}
+	}
+
 }

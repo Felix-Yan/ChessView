@@ -27,9 +27,14 @@ public class Check implements Move {
 
 	public boolean isValid(Board board) {
 		if(move.isValid(board)){
-			//If the move is valid, update the board before calling isValidCheck.
-			this.apply(board);
-			return this.isValidCheck(board);
+			//If the move is valid, construct a new board for calling isValidCheck.
+			Board newBoard = new Board(board);
+			this.apply(newBoard);
+			if(this.isValidCheck(newBoard)){
+				//let the original board remember that there will be a check after applying the move
+				board.aboutToCheck(!isWhite());
+				return true;
+			}
 		}
 		return false;
 	}
