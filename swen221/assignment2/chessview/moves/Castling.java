@@ -33,10 +33,13 @@ public class Castling implements MultiPieceMove {
 		if(kingSide){
 			board.move(kingPos, new Position(kingPos.row(), kingPos.column()+2));
 			board.move(rookPos, new Position(rookPos.row(), rookPos.column()-2));
+			board.setKingPos(new Position(kingPos.row(), kingPos.column()+2), isWhite);
 		}else{
 			board.move(kingPos, new Position(kingPos.row(), kingPos.column()-2));
 			board.move(rookPos, new Position(rookPos.row(), rookPos.column()+3));
+			board.setKingPos(new Position(kingPos.row(), kingPos.column()-2), isWhite);
 		}
+		board.setPawnJumped(false);//reset the flag to reset pawnJumpedPos after completing next move.
 	}
 
 	/**
@@ -69,14 +72,13 @@ public class Castling implements MultiPieceMove {
 			}
 		}
 		//Castling cannot be performed if the king has moved
-		if(board.isKingMoved()) return false;
+		if(!board.getCastlingValid().get(kingPos)) return false;
 
 		//Castling cannot be performed if the rook has moved
-		if(board.isRookMoved()) return false;
+		if(!board.getCastlingValid().get(rookPos)) return false;
 
 		//Castling cannot be performed if there are other pieces between the king and the rook
 		if(!board.clearRowExcept(kingPos, rookPos, king, rook)) return false;
-
 
 		return true;
 	}
@@ -90,12 +92,12 @@ public class Castling implements MultiPieceMove {
 	}
 
 	/**
-	 * A castling is not a checking.
+	 * A castling might be a check. Check it in the board.
 	 * @param board - the current board.
-	 * @return false always.
+	 * @return true if there is a check; false otherwise.
 	 */
 	@Override
 	public boolean isChecking(Board board) {
-		return false;
+		return board.isInCheck(!isWhite, board);
 	}
 }

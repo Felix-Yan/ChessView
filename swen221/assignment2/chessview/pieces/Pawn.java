@@ -27,12 +27,25 @@ public class Pawn extends PieceImpl implements Piece {
 		}
 		//pawn can move two squares for the first move
 		else if ((oldRow + dir + dir) == newRow && oldCol == newCol) {
-			return ((dir == 1 && oldRow == 2) || (dir == -1 && oldRow == 7))
+			if(((dir == 1 && oldRow == 2) || (dir == -1 && oldRow == 7))
 					&& (board.clearColumnExcept(oldPosition, newPosition, p,t))//need to check column clear
-					&& t == null && this.equals(p);
+					&& t == null && this.equals(p)){
+				board.setJumpPawnPos(newPosition);
+				board.setPawnJumped(true);
+				return true;
+			}
 		}
-		//pawn takes one opponent's piece normally
-		else if( (oldRow + dir) == newRow && ((oldCol+1) == newCol || (oldCol-1) == newCol) ){
+		//pawn takes one opponent's piece
+		else if( (oldRow + dir) == newRow && ( (oldCol+1) == newCol || (oldCol-1 ) == newCol) ){
+			//takes care of the enPassant case
+			if(t == null){
+				Position passedPawnPos = new Position(oldRow, newCol);
+				//the pawn taken must have just moved two squares ahead
+				if(!passedPawnPos.equals(board.getJumpPawnPos())){
+					return false;
+				}
+				t = board.pieceAt(passedPawnPos);
+			}
 			return this.equals(p)
 					&& (isTaken != null && isTaken.equals(t));//only move diagonally if t is not null
 		}
@@ -57,5 +70,9 @@ public class Pawn extends PieceImpl implements Piece {
 	public boolean canCheck(Board board, Position currentPos) {
 		Position kingPos = board.getKingPos(!this.isWhite);
 		return isValidMove(currentPos, kingPos, new King(!this.isWhite), board);
+	}
+
+	public boolean isValidEnPassant(){
+		return false;
 	}
 }

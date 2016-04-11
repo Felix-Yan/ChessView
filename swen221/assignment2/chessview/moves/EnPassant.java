@@ -9,22 +9,55 @@ import swen221.assignment2.chessview.pieces.*;
  * @author djp
  *
  */
-public class EnPassant implements Move {
+public class EnPassant implements MultiPieceMove {
+	private SinglePieceMove move;
+
 	public EnPassant(SinglePieceMove move) {
+		this.move = move;
 	}
 
+	/**
+	 * This tells if the move is on the white side.
+	 * @return true if the move is on the white side; false otherwise.
+	 */
 	public boolean isWhite() {
-		return false;
+		return move.isWhite();
 	}
 
+	/**
+	 * This tells if the enPassant move is valid.
+	 * @param board - the current board.
+	 * @return true if the move is valid; false otherwise.
+	 */
 	public boolean isValid(Board board) {
-		return true;
+		//the last move has to be a two square pawn jump from the opponent
+		if(board.getJumpPawnPos() == null) return false;
+
+		//delegate the job to singlePieceMove
+		return move.isValid(board);
 	}
 
+	/**
+	 * Move the pawn taking to the new position.
+	 * Remove the pawn taken.
+	 */
 	public void apply(Board board) {
+		board.setPieceNull(board.getJumpPawnPos());
+		board.move(move.oldPosition, move.newPosition);
+		board.setPawnJumped(false);
 	}
 
 	public String toString() {
-		return "ep";
+		return ((SinglePieceTake)move).toString()+"ep";
+	}
+
+	/**
+	 * An en passnant might be a check. Check it in the board.
+	 * @param board - the current board.
+	 * @return true if there is a check; false otherwise.
+	 */
+	@Override
+	public boolean isChecking(Board board) {
+		return board.isInCheck(!move.isWhite(), board);
 	}
 }

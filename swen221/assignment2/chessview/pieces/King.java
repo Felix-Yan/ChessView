@@ -1,5 +1,7 @@
 package swen221.assignment2.chessview.pieces;
 
+import java.util.Map;
+
 import swen221.assignment2.chessview.*;
 
 public class King extends PieceImpl implements Piece {
@@ -22,7 +24,13 @@ public class King extends PieceImpl implements Piece {
 				&& diffRow <= 1){
 			//update the position of the corresponding King on the board if it makes a valid move
 			board.setKingPos(newPosition, isWhite);
-			board.setKingMoved(true);;
+			//if this is the first move of the king, update castlingValid
+			Map<Position, Boolean> castlingValid = board.getCastlingValid();
+			if(castlingValid.containsKey(oldPosition)){
+				if(castlingValid.get(oldPosition)){
+					board.updateCastlingValid(oldPosition);
+				}
+			}
 			return true;
 		}
 		else{

@@ -38,6 +38,7 @@ public class SinglePieceMove implements MultiPieceMove {
 
 	public void apply(Board b) {
 		b.move(oldPosition,newPosition);
+		b.setPawnJumped(false);//set the flag to be false to reset pawnJumpedPos after completing next move.
 	}
 
 	public String toString() {

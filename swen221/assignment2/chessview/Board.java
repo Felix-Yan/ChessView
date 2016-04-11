@@ -1,5 +1,8 @@
 package swen221.assignment2.chessview;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import swen221.assignment2.chessview.moves.Move;
 import swen221.assignment2.chessview.pieces.*;
 
@@ -11,12 +14,17 @@ public class Board {
 	private boolean blackChecked;//Is the black king checked?
 	private boolean aboutToCheckWhite;
 	private boolean aboutToCheckBlack;
+	//the position of the pawn that has just moved two squares.
+	//used for validity check of enPassant.
+	private Position jumpPawnPos;
+	//is pawn just jumped? Used for resetting jumpPawnPos.
+	private boolean pawnJumped;
+
 	/*
-	 * the following two variables tell if the pieces hav moved at all in this game.
-	 * If moved already , moved should be true; false otherwise.
+	 * The map holds the positions of kings and rooks. The corresponding boolean value tells us if the castling
+	 *  is valid or not.
 	 */
-	private boolean kingMoved;
-	private boolean rookMoved;
+	private Map<Position, Boolean> castlingValid = new HashMap<Position, Boolean>();
 
 
 
@@ -58,6 +66,8 @@ public class Board {
 
 		whiteKingPos = new Position(1,5);
 		blackKingPos = new Position(8,5);
+
+		initializeCastlingValid();
 	}
 
 
@@ -79,6 +89,26 @@ public class Board {
 		this.whiteKingPos = board.getKingPos(true);
 		if(board.whiteChecked) this.setChecked(true);
 		if(board.blackChecked) this.setChecked(false);
+		//Pass the castlingValid map
+		this.castlingValid = board.getCastlingValid();
+		//Pass the fields for enPassant
+		this.pawnJumped = board.pawnJumped;
+		this.jumpPawnPos = board.jumpPawnPos;
+	}
+
+	/**
+	 * This initialize the castlingValid Map by putting positions of kings and rooks with true boolean.
+	 */
+	public void initializeCastlingValid(){
+		//add king positions. They are valid for castling as they haven't moved.
+		castlingValid.put(new Position(1,5), true);
+		castlingValid.put(new Position(8,5), true);
+
+		//add rook positions.
+		castlingValid.put(new Position(1,1), true);
+		castlingValid.put(new Position(1,8), true);
+		castlingValid.put(new Position(8,1), true);
+		castlingValid.put(new Position(8,8), true);
 	}
 
 	/**
@@ -107,11 +137,11 @@ public class Board {
 				}
 
 				//this is to make sure there are no check moves disguised as noncheck
-				if(isInCheck(true,this) || isInCheck(false, this)&& !isChecked() ){
+				if( (isInCheck(true,this) || isInCheck(false, this)) && !isChecked() ){
 					return false;
 				}
-
-				return true;
+				//checks if there should be a promotion
+				return !lackingPromotion(this);
 			}else{
 				//if a king is in check, the current move has to solve this problem. Otherwise invalid.
 				Board newBoard = new Board(this);
@@ -119,7 +149,8 @@ public class Board {
 				if(!isInCheck(move.isWhite(),newBoard)){
 					move.apply(this);
 					removeChecked();
-					return true;
+					//checks if there should be a promotion
+					return !lackingPromotion(this);
 				}else{
 					return false;
 				}
@@ -140,6 +171,10 @@ public class Board {
 		//this will do the take action as it will overwrite the taken piece
 		pieces[newPosition.row()][newPosition.column()] = p;
 		pieces[oldPosition.row()][oldPosition.column()] = null;
+
+		if(!pawnJumped && jumpPawnPos != null){
+			jumpPawnPos = null;//reset the jumpPawnPos to null if pawn jump was not the opponent's last move.
+		}
 	}
 
 	public void setPieceAt(Position pos, Piece piece) {
@@ -165,6 +200,31 @@ public class Board {
 			r += "\n";
 		}
 		return r + "  a b c d e f g h";
+	}
+
+	/**
+	 * This checks that there is not a pawn waiting for promotion.
+	 * @param board - the current board
+	 * @return true if there is promotion lacking; false otherwise.
+	 */
+	public boolean lackingPromotion(Board board){
+		for(int col=1; col <= 8; ++col){
+			int row = 1;
+			Position pos = new Position(row, col);
+			Piece p = board.pieceAt(pos);
+			if(p instanceof Pawn){
+				if(!p.isWhite()) return true;
+			}
+		}
+		for(int col=1; col <= 8; ++col){
+			int row = 8;
+			Position pos = new Position(row, col);
+			Piece p = board.pieceAt(pos);
+			if(p instanceof Pawn){
+				if(p.isWhite()) return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -326,37 +386,6 @@ public class Board {
 		return false;
 	}
 
-	/**
-	 * A getter for the field kingMoved.
-	 * @return the kingMoved
-	 */
-	public boolean isKingMoved() {
-		return kingMoved;
-	}
-
-	/**
-	 * A setter for the field kingMoved
-	 * @param kingMoved the kingMoved to set
-	 */
-	public void setKingMoved(boolean kingMoved) {
-		this.kingMoved = kingMoved;
-	}
-
-	/**
-	 * A getter for the field rookMoved
-	 * @return the rookMoved
-	 */
-	public boolean isRookMoved() {
-		return rookMoved;
-	}
-
-	/**
-	 * A setter for the field rookMoved
-	 * @param rookMoved the rookMoved to set
-	 */
-	public void setRookMoved(boolean rookMoved) {
-		this.rookMoved = rookMoved;
-	}
 
 	/**
 	 * This sets if the king is going to be checked after this move.
@@ -427,5 +456,68 @@ public class Board {
 			this.blackKingPos = newPosition;
 		}
 	}
+
+	/**
+	 * This updates the castlingValid map if any of the king or rook has moved.
+	 * Make the corresponding boolean value false.
+	 * @param oldPosition - the old position of the piece moved
+	 */
+	public void updateCastlingValid(Position oldPosition){
+		castlingValid.put(oldPosition, false);
+	}
+
+
+	/**
+	 * Getter for castlingValid.
+	 * @return the castlingValid
+	 */
+	public Map<Position, Boolean> getCastlingValid() {
+		return this.castlingValid;
+	}
+
+
+	/**
+	 * Getter for jumpPawnPos.
+	 * @return the jumpPawnPos
+	 */
+	public Position getJumpPawnPos() {
+		return jumpPawnPos;
+	}
+
+
+	/**
+	 * Setter for jumpPawnPos;
+	 * @param jumpPawnPos the jumpPawnPos to set
+	 */
+	public void setJumpPawnPos(Position jumpPawnPos) {
+		this.jumpPawnPos = jumpPawnPos;
+	}
+
+
+	/**
+	 * Getter for pawnJumped.
+	 * @return the pawnJumped
+	 */
+	public boolean isPawnJumped() {
+		return pawnJumped;
+	}
+
+
+	/**
+	 * Setter for pawnJumped.
+	 * @param pawnJumped the pawnJumped to set
+	 */
+	public void setPawnJumped(boolean pawnJumped) {
+		this.pawnJumped = pawnJumped;
+	}
+
+	/**
+	 * This sets the piece at the given position to be null.
+	 * @param pos
+	 */
+	public void setPieceNull(Position pos){
+		pieces[pos.row()][pos.column()] = null;
+	}
+
 
 }

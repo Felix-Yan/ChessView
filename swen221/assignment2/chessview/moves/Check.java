@@ -50,6 +50,7 @@ public class Check implements Move {
 
 	public void apply(Board board) {
 		move.apply(board);
+		board.setPawnJumped(false);;
 	}
 
 	public String toString() {

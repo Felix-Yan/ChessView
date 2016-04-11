@@ -1,5 +1,7 @@
 package swen221.assignment2.chessview.pieces;
 
+import java.util.Map;
+
 import swen221.assignment2.chessview.*;
 
 public class Rook extends PieceImpl implements Piece {
@@ -18,7 +20,14 @@ public class Rook extends PieceImpl implements Piece {
 				&& (board.clearColumnExcept(oldPosition, newPosition, p,t)
 						|| board.clearRowExcept(oldPosition,newPosition, p, t)
 						) ){
-			board.setRookMoved(true);
+			//if this is the first move of the rook, update castlingValid
+			Map<Position, Boolean> castlingValid = board.getCastlingValid();
+			if(castlingValid.containsKey(oldPosition)){
+				if(castlingValid.get(oldPosition)){
+					board.updateCastlingValid(oldPosition);
+				}
+			}
+
 			return true;
 		}
 		return false;

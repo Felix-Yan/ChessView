@@ -170,7 +170,7 @@ public class ChessGame {
 
 		//en passant has ep as suffix
 		if((index+1) < str.length() && str.charAt(index) == 'e' && str.charAt(index+1) == 'p') {
-			move = new EnPassant((SinglePieceMove) move);//TODO
+			move = new EnPassant((SinglePieceMove) move);
 			index+=2;
 		} else if((index+1) < str.length() && str.charAt(index)=='=') {
 			lookahead = str.charAt(index+1);
