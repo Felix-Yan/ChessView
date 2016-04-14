@@ -194,7 +194,7 @@ public class ChessGame {
 				default:
 					throw new IllegalArgumentException("invalid sheet");
 			}
-			move = new PawnPromotion((SinglePieceMove) move,promotion);//TODO
+			move = new PawnPromotion((SinglePieceMove) move,promotion);
 			index+=2;
 		}
 

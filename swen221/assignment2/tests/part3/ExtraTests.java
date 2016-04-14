@@ -123,7 +123,8 @@ public class ExtraTests {
 
 	public @Test void testErrors(){
 		String[] tests = {
-				"d2-d4 e7-e6\nd4-d5 c7-c5\nd5xc6ep Nb8-a6\nc6xd7+ Ke8-e7\nd7xBc8"
+				//"d2-d4 e7-e6\nd4-d5 c7-c5\nd5xc6ep Nb8-a6\nc6xd7+ Ke8-e7\nd7xBc8"
+				"d2-d4 d7-d5\ne2-e4 Qd8-d6\nc2-c3 e7-e5\nd4xe5 Qd6xe5\nc3-c4 Bc8-e6\nKe1-d2 d5xc4\na2-a3 Nb8-c6\na3-a4 O-O-O+"
 		};
 		checkInvalidTests(tests);
 	}
@@ -187,6 +188,11 @@ public class ExtraTests {
 
 				"a2-a3 d7-d5\nb2-b3 d5-d4\nc2-c4 d4xc3ep\nBc1-b2 c3xBb2\nQd1-c1 b2xQc1",
 				"d2-d4 e7-e6\nd4-d5 c7-c5\nd5xc6ep Nb8-a6\nc6xd7+ Ke8-e7\nd7xBc8",
+
+				"f2-f4 e7-e6\nNg1-h3 b7-b6\ne2-e4 Bf8-d6\nBf1-d3 a7-a6\nO-O a6-a5\nKg1-f2 a5-a4\nKf2-e1 a4-a3\nRf1-h1 a3xb2\nO-O",
+				"Ng1-h3 Ng8-f6\nNh3-i5",
+				"d2-d3 e7-e5\nBc1-f4 a7-a6\nBf4-i7",
+				"d2-d4 d7-d5\ne2-e3 Qd8-d6\nc2-c3 Ke8-e9"
 		};
 
 		checkInvalidTests(tests);

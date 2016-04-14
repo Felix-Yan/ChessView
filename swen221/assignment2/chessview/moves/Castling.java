@@ -1,5 +1,7 @@
 package swen221.assignment2.chessview.moves;
 
+import java.util.Map;
+
 import swen221.assignment2.chessview.*;
 import swen221.assignment2.chessview.pieces.*;
 
@@ -79,6 +81,19 @@ public class Castling implements MultiPieceMove {
 
 		//Castling cannot be performed if there are other pieces between the king and the rook
 		if(!board.clearRowExcept(kingPos, rookPos, king, rook)) return false;
+
+		//if this is the first move of the king, update castlingValid
+		Map<Position, Boolean> castlingValid = board.getCastlingValid();
+		if(castlingValid.containsKey(kingPos)){
+			if(castlingValid.get(kingPos)){
+				board.updateCastlingValid(kingPos);
+			}
+		}
+		if(castlingValid.containsKey(rookPos)){
+			if(castlingValid.get(rookPos)){
+				board.updateCastlingValid(rookPos);
+			}
+		}
 
 		return true;
 	}

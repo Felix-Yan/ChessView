@@ -33,6 +33,11 @@ public class SinglePieceMove implements MultiPieceMove {
 	}
 
 	public boolean isValid(Board board) {
+		//the move has to be inside the board
+		int newRow = newPosition.row();
+		int newCol = newPosition.column();
+		if(newRow < 1 || newRow > 8) return false;
+		if(newCol < 1 || newCol > 8) return false;
 		return piece.isValidMove(oldPosition, newPosition, null, board);
 	}
 
